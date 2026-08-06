@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>nevermind.hcn — Events</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sidebar-bg:#0F172A; --sidebar-text:#94A3B8; --sidebar-active-bg:#1E293B; --sidebar-active-text:#F8FAFC;
+    --accent:#38BDF8; --bg:#F1F5F9; --white:#FFFFFF; --text-primary:#0F172A; --text-muted:#64748B; --border:#E2E8F0;
+    --status-draft:#F1F5F9; --status-draft-text:#64748B;
+    --status-sent:#FEF3C7; --status-sent-text:#D97706;
+    --status-approved:#DCFCE7; --status-approved-text:#16A34A;
+    --status-done:#EDE9FE; --status-done-text:#7C3AED;
+  }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-primary); display:flex; height:100vh; overflow:hidden; }
+  .sidebar { width:220px; min-width:220px; background:var(--sidebar-bg); display:flex; flex-direction:column; height:100vh; }
+  .sidebar-logo { padding:24px 20px 20px; font-size:18px; font-weight:700; color:#F8FAFC; letter-spacing:-0.5px; border-bottom:1px solid #1E293B; }
+  .sidebar-logo span { color:var(--accent); }
+  .sidebar-nav { flex:1; padding:16px 10px; display:flex; flex-direction:column; gap:2px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; color:var(--sidebar-text); font-size:14px; font-weight:500; cursor:pointer; transition:background .15s,color .15s; text-decoration:none; }
+  .nav-item:hover { background:var(--sidebar-active-bg); color:#CBD5E1; }
+  .nav-item.active { background:var(--sidebar-active-bg); color:var(--sidebar-active-text); border-left:3px solid var(--accent); }
+  .nav-item svg { flex-shrink:0; opacity:.8; } .nav-item.active svg { opacity:1; }
+  .sidebar-divider { height:1px; background:#1E293B; margin:10px 10px; }
+  .sidebar-bottom { padding:10px; }
+  .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+  .topbar { background:var(--white); border-bottom:1px solid var(--border); padding:0 28px; height:60px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .topbar-search { display:flex; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px 14px; gap:8px; width:300px; }
+  .topbar-search input { border:none; background:transparent; font-size:13px; outline:none; width:100%; font-family:'Inter',sans-serif; }
+  .topbar-search input::placeholder { color:var(--text-muted); }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .topbar-icon { width:36px; height:36px; border-radius:8px; background:var(--bg); display:flex; align-items:center; justify-content:center; border:1px solid var(--border); color:var(--text-muted); }
+  .avatar { width:36px; height:36px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--sidebar-bg); }
+  .content { flex:1; overflow-y:auto; padding:28px; }
+  .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .page-title { font-size:22px; font-weight:700; }
+  .page-sub { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .btn-primary { background:var(--sidebar-bg); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; }
+
+  /* Filter bar */
+  .filter-bar { display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-search { display:flex; align-items:center; gap:8px; background:var(--white); border:1px solid var(--border); border-radius:8px; padding:8px 12px; width:280px; }
+  .filter-search input { border:none; outline:none; font-size:13px; width:100%; font-family:'Inter',sans-serif; }
+  select.filter-select { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:13px; font-family:'Inter',sans-serif; color:var(--text-primary); cursor:pointer; }
+
+  .card { background:var(--white); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { padding:12px 20px; text-align:left; font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; background:#F8FAFC; border-bottom:1px solid var(--border); }
+  tbody td { padding:14px 20px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:#F8FAFC; }
+  .font-medium { font-weight:500; }
+  .text-muted { color:var(--text-muted); font-size:12px; }
+  .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .badge-draft { background:var(--status-draft); color:var(--status-draft-text); }
+  .badge-sent { background:var(--status-sent); color:var(--status-sent-text); }
+  .badge-approved { background:var(--status-approved); color:var(--status-approved-text); }
+  .badge-done { background:var(--status-done); color:var(--status-done-text); }
+  .event-type { display:inline-flex; padding:3px 9px; border-radius:4px; font-size:11px; font-weight:500; }
+  .type-corporate { background:#EFF6FF; color:#3B82F6; }
+  .type-concert { background:#FDF4FF; color:#C026D3; }
+  .type-running { background:#F0FDF4; color:#16A34A; }
+  .row-actions { display:flex; gap:6px; }
+  .icon-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; color:var(--text-muted); cursor:pointer; }
+  .icon-btn:hover { background:#F1F5F9; }
+  .avatar-sm { width:28px; height:28px; border-radius:50%; background:#E0F2FE; color:#0284C7; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; flex-shrink:0; }
+  .event-cell { display:flex; align-items:center; gap:10px; }
+  .footer-bar { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">nevermind<span>.</span>hcn</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a class="nav-item active" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Events</a>
+    <a class="nav-item" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Quotations</a>
+    <a class="nav-item" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Client</a>
+    <a class="nav-item" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Vendors</a>
+    <div class="sidebar-divider"></div>
+    <a class="nav-item" href="#"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="nav-item">
+      <div style="width:28px;height:28px;border-radius:50%;background:#38BDF8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0F172A;">PT</div>
+      <div><div style="font-size:12px;color:#F8FAFC;font-weight:500;">Putra M. Pratomo</div><div style="font-size:11px;color:#64748B;">Event Director</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="14" height="14" fill="none" stroke="#94A3B8" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search events, quotations, clients..."/>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="avatar">PT</div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Events</div>
+        <div class="page-sub">12 events total across 3 event types</div>
+      </div>
+      <button class="btn-primary">+ Create Event</button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-search">
+        <svg width="13" height="13" fill="none" stroke="#94A3B8" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search by event title or client..."/>
+      </div>
+      <select class="filter-select"><option>All Types</option><option>Corporate</option><option>Concert</option><option>Running</option></select>
+      <select class="filter-select"><option>All Status</option><option>Draft</option><option>Sent</option><option>Approved</option><option>Done</option></select>
+      <select class="filter-select"><option>Newest First</option><option>Oldest First</option></select>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Type</th>
+            <th>Venue</th>
+            <th>Event Date</th>
+            <th>Status</th>
+            <th>Created By</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="font-medium">Rapat Rekonsiliasi KBUMN</div>
+              <div class="text-muted">PT. Industri Baterai Indonesia</div>
+            </td>
+            <td><span class="event-type type-corporate">Corporate</span></td>
+            <td><div class="text-muted">Hotel Mercure Jakarta Sabang</div></td>
+            <td><div class="text-muted">08 – 11 Jan 2024</div></td>
+            <td><span class="badge badge-approved">Approved</span></td>
+            <td>
+              <div class="event-cell"><div class="avatar-sm">PT</div><span class="text-muted">Putra</span></div>
+            </td>
+            <td>
+              <div class="row-actions" style="justify-content:flex-end;">
+                <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="font-medium">Annual Company Gathering</div>
+              <div class="text-muted">PT. Telkom Indonesia</div>
+            </td>
+            <td><span class="event-type type-corporate">Corporate</span></td>
+            <td><div class="text-muted">The Westin Jakarta</div></td>
+            <td><div class="text-muted">15 Mar 2024</div></td>
+            <td><span class="badge badge-sent">Sent</span></td>
+            <td><div class="event-cell"><div class="avatar-sm">SR</div><span class="text-muted">Sari</span></div></td>
+            <td><div class="row-actions" style="justify-content:flex-end;">
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="font-medium">HCN Music Night</div>
+              <div class="text-muted">PT. Bank BNI</div>
+            </td>
+            <td><span class="event-type type-concert">Concert</span></td>
+            <td><div class="text-muted">GBK Senayan, Jakarta</div></td>
+            <td><div class="text-muted">20 Apr 2024</div></td>
+            <td><span class="badge badge-draft">Draft</span></td>
+            <td><div class="event-cell"><div class="avatar-sm">PT</div><span class="text-muted">Putra</span></div></td>
+            <td><div class="row-actions" style="justify-content:flex-end;">
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="font-medium">Jakarta Marathon 2024</div>
+              <div class="text-muted">Yayasan Olahraga Jakarta</div>
+            </td>
+            <td><span class="event-type type-running">Running</span></td>
+            <td><div class="text-muted">Monas, Jakarta Pusat</div></td>
+            <td><div class="text-muted">05 May 2024</div></td>
+            <td><span class="badge badge-draft">Draft</span></td>
+            <td><div class="event-cell"><div class="avatar-sm">RD</div><span class="text-muted">Rudi</span></div></td>
+            <td><div class="row-actions" style="justify-content:flex-end;">
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+              <div class="icon-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="footer-bar">
+        <span>Showing 4 of 12 events</span>
+        <span>Page 1 of 3</span>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
