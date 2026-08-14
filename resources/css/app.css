@@ -745,6 +745,16 @@ select {
     flex-shrink: 0;
 }
 
+.client-logo.c-purple {
+    background: #fdf4ff;
+    color: #c026d3;
+}
+
+.client-logo.c-green {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
 .client-name {
     font-size: 14px;
     font-weight: 600;
@@ -1013,6 +1023,12 @@ select {
     background: #fef2f2;
     color: var(--danger);
     border: 1px solid #fecaca;
+}
+
+.alert-warning {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
 }
 
 /* ── EMPTY STATE ── */

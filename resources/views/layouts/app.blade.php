@@ -22,7 +22,7 @@
         ['label' => 'Dashboard', 'href' => route('dashboard'), 'route' => 'dashboard', 'icon' => 'grid'],
         ['label' => 'Events', 'href' => '#', 'route' => '', 'icon' => 'calendar'],
         ['label' => 'Quotations', 'href' => '#', 'route' => '', 'icon' => 'file'],
-        ['label' => 'Client', 'href' => '#', 'route' => '', 'icon' => 'users'],
+        ['label' => 'Client', 'href' => route('clients.index'), 'route' => 'clients.*', 'icon' => 'users'],
         ['label' => 'Vendors', 'href' => '#', 'route' => '', 'icon' => 'home'],
     ];
     $icons = [
@@ -86,6 +86,12 @@
     <main class="content">
         @if (session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-error">{{ session('error') }}</div>
+        @endif
+        @if (session('updated'))
+            <div class="alert alert-warning">{{ session('updated') }}</div>
         @endif
         @if ($errors->any())
             <div class="alert alert-error">

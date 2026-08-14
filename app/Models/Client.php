@@ -17,4 +17,17 @@ class Client extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function initials(): string
+    {
+        $words = collect(preg_split('/\s+/', trim($this->company_name)))
+            ->reject(fn (string $word) => strlen(preg_replace('/[^A-Za-z0-9]/', '', $word)) <= 3)
+            ->map(fn (string $word) => mb_strtoupper(mb_substr(preg_replace('/[^A-Za-z0-9]/', '', $word), 0, 1)))
+            ->take(2)
+            ->implode('');
+
+        return $words !== ''
+            ? $words
+            : mb_strtoupper(mb_substr($this->company_name, 0, 1) ?: '?');
+    }
 }
