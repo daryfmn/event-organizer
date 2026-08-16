@@ -23,7 +23,7 @@
         ['label' => 'Events', 'href' => '#', 'route' => '', 'icon' => 'calendar'],
         ['label' => 'Quotations', 'href' => '#', 'route' => '', 'icon' => 'file'],
         ['label' => 'Client', 'href' => route('clients.index'), 'route' => 'clients.*', 'icon' => 'users'],
-        ['label' => 'Vendors', 'href' => '#', 'route' => '', 'icon' => 'home'],
+        ['label' => 'Vendors', 'href' => route('vendors.index'), 'route' => 'vendors.*', 'icon' => 'home'],
     ];
     $icons = [
         'grid' => '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',

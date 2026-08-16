@@ -543,6 +543,26 @@ tbody tr:hover td {
     color: #475569;
 }
 
+.cat-multimedia {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.cat-venue {
+    background: #fdf4ff;
+    color: #c026d3;
+}
+
+.cat-catering {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.cat-logistics {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
 .variant-tag {
     display: inline-block;
     font-size: 11px;
@@ -706,6 +726,12 @@ select {
     font-family: inherit;
     color: var(--text-primary);
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
 }
 
 /* ── CLIENT CARDS ── */
@@ -924,6 +950,31 @@ select {
     flex-shrink: 0;
 }
 
+.vendor-icon.v-multimedia {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.vendor-icon.v-venue {
+    background: #fdf4ff;
+    color: #c026d3;
+}
+
+.vendor-icon.v-catering {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.vendor-icon.v-logistics {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.vendor-icon.v-slate {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
 .staff-cell {
     display: flex;
     align-items: center;
@@ -967,6 +1018,15 @@ select {
     font-family: inherit;
     color: var(--text-primary);
     background: var(--white);
+}
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
 }
 
 .form-group input:focus,
