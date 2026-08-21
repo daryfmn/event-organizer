@@ -43,4 +43,29 @@ class Event extends Model
     {
         return $this->hasMany(Quotation::class);
     }
+
+    public function statusLabel(): string
+    {
+        return ucfirst($this->status);
+    }
+
+    public function dateRangeLabel(): string
+    {
+        $start = $this->start_date;
+        $end = $this->end_date;
+
+        if ($start->isSameDay($end)) {
+            return $start->format('d M Y');
+        }
+
+        if ($start->format('m Y') === $end->format('m Y')) {
+            return $start->format('d').' – '.$end->format('d M Y');
+        }
+
+        if ($start->format('Y') === $end->format('Y')) {
+            return $start->format('d M').' – '.$end->format('d M Y');
+        }
+
+        return $start->format('d M Y').' – '.$end->format('d M Y');
+    }
 }

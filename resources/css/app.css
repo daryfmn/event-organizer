@@ -344,6 +344,13 @@ body {
     background: var(--bg);
 }
 
+.btn-primary:disabled,
+.btn-outline:disabled,
+.logout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .btn-link {
     font-size: 12px;
     font-weight: 500;
