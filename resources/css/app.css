@@ -982,6 +982,81 @@ select {
     color: #64748b;
 }
 
+/* ── QUOTATION FORM ── */
+.items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+.quotation-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: var(--bg);
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.item-grid .span-2 {
+    grid-column: span 2;
+}
+
+.item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.item-footer .item-total {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.totals-box {
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+    padding-top: 14px;
+    max-width: 360px;
+    margin-left: auto;
+}
+
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.totals-row span:last-child {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+}
+
+.totals-row.grand {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 4px;
+}
+
+.icon-btn-active {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0;
+}
+
 .staff-cell {
     display: flex;
     align-items: center;

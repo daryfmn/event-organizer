@@ -21,7 +21,7 @@
     $nav = [
         ['label' => 'Dashboard', 'href' => route('dashboard'), 'route' => 'dashboard', 'icon' => 'grid'],
         ['label' => 'Events', 'href' => route('events.index'), 'route' => 'events.*', 'icon' => 'calendar'],
-        ['label' => 'Quotations', 'href' => '#', 'route' => '', 'icon' => 'file'],
+        ['label' => 'Quotations', 'href' => route('quotations.index'), 'route' => 'quotations.*', 'icon' => 'file'],
         ['label' => 'Client', 'href' => route('clients.index'), 'route' => 'clients.*', 'icon' => 'users'],
         ['label' => 'Vendors', 'href' => route('vendors.index'), 'route' => 'vendors.*', 'icon' => 'home'],
     ];

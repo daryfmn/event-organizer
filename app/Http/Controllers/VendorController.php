@@ -76,6 +76,13 @@ class VendorController extends Controller
 
     public function destroy(Vendor $vendor): RedirectResponse
     {
+        $itemsCount = $vendor->quotationItems()->count();
+
+        if ($itemsCount > 0) {
+            return redirect()->route('vendors.index')
+                ->with('error', "Cannot delete {$vendor->name}: used in {$itemsCount} quotation item(s).");
+        }
+
         $vendor->delete();
 
         return redirect()->route('vendors.index')->with('error', 'Vendor deleted.');

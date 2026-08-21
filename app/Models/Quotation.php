@@ -55,4 +55,40 @@ class Quotation extends Model
     {
         return $this->hasMany(QuotationItem::class)->orderBy('sort_order');
     }
+
+    public static function generateNumber(): string
+    {
+        $year = now()->format('Y');
+
+        $maxSeq = (int) static::where('quotation_number', 'like', "%/{$year}")
+            ->get()
+            ->map(fn (self $quotation) => (int) strtok($quotation->quotation_number, '/'))
+            ->max();
+
+        $romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $roman = $romans[(int) now()->format('n') - 1];
+
+        return str_pad((string) ($maxSeq + 1), 4, '0', STR_PAD_LEFT).'/QUOT/HCN/'.$roman.'/'.$year;
+    }
+
+    public function recalculate(): void
+    {
+        $subtotal = round((float) $this->items()->sum('total'), 2);
+        $organizingFee = round($subtotal * $this->organizing_fee_percent / 100, 2);
+        $total = $subtotal + $organizingFee;
+        $ppn = round($total * $this->ppn_percent / 100, 2);
+
+        $this->forceFill([
+            'subtotal' => $subtotal,
+            'organizing_fee' => $organizingFee,
+            'total' => $total,
+            'ppn' => $ppn,
+            'grand_total' => $total + $ppn,
+        ])->save();
+    }
+
+    public static function rupiah(float|string|null $amount): string
+    {
+        return 'Rp '.number_format((float) $amount, 0, ',', '.');
+    }
 }
