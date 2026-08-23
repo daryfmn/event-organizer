@@ -21,12 +21,8 @@
             <div class="summary-value amber">{{ $awaitingApproval }}</div>
         </div>
         <div class="summary-item">
-            <div class="summary-label">Approved Value</div>
-            <div class="summary-value green">{{ \App\Models\Quotation::rupiah($approvedValue) }}</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Total Pipeline Value</div>
-            <div class="summary-value">{{ \App\Models\Quotation::rupiah($pipelineValue) }}</div>
+            <div class="summary-label">Approved</div>
+            <div class="summary-value green">{{ $approvedCount }}</div>
         </div>
     </div>
 
@@ -72,7 +68,7 @@
                     @foreach ($quotations as $quotation)
                         <tr>
                             <td>
-                                <div class="font-medium">{{ $quotation->quotation_number }}</div>
+                                <a class="font-medium" href="{{ route('quotations.show', $quotation) }}" style="color:inherit;">{{ $quotation->quotation_number }}</a>
                                 @if ($quotation->variant_label)
                                     <span class="variant-tag">{{ $quotation->variant_label }}</span>
                                 @endif
@@ -86,6 +82,9 @@
                             <td><span class="badge badge-{{ $quotation->event->status }}">{{ $quotation->event->statusLabel() }}</span></td>
                             <td>
                                 <div class="row-actions">
+                                    <a class="icon-btn" href="{{ route('quotations.show', $quotation) }}" title="View detail">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
                                     <form method="POST" action="{{ route('quotations.approve', $quotation) }}" title="{{ $quotation->is_approved ? 'Unapprove' : 'Approve as winning variant' }}">
                                         @csrf
                                         <button class="icon-btn {{ $quotation->is_approved ? 'icon-btn-active' : '' }}" type="submit">

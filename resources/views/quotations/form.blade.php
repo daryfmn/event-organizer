@@ -56,20 +56,10 @@
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="form-group">
-                    <label for="organizing_fee_percent">Organizing fee (%)</label>
-                    <input id="organizing_fee_percent" name="organizing_fee_percent" type="number" step="any" min="0" max="100" value="{{ old('organizing_fee_percent', $quotation->organizing_fee_percent) }}" class="calc-input" data-calc="fee" required />
-                    @error('organizing_fee_percent')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="ppn_percent">PPN (%)</label>
-                    <input id="ppn_percent" name="ppn_percent" type="number" step="any" min="0" max="100" value="{{ old('ppn_percent', $quotation->ppn_percent) }}" class="calc-input" data-calc="ppn" required />
-                    @error('ppn_percent')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
+            </div>
+
+            <div class="rates-note">
+                Organizing fee {{ $quotation->organizing_fee_percent }}% and PPN {{ $quotation->ppn_percent }}% follow company Settings and are locked per quotation.
             </div>
 
             <div class="items-header">
@@ -139,8 +129,8 @@
             subtotal += total;
         });
 
-        const feePercent = parseFloat(document.querySelector('[data-calc="fee"]').value) || 0;
-        const ppnPercent = parseFloat(document.querySelector('[data-calc="ppn"]').value) || 0;
+        const feePercent = parseFloat(document.getElementById('calc-fee-label').textContent) || 0;
+        const ppnPercent = parseFloat(document.getElementById('calc-ppn-label').textContent) || 0;
         const fee = subtotal * feePercent / 100;
         const total = subtotal + fee;
         const ppn = total * ppnPercent / 100;

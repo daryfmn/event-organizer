@@ -52,6 +52,13 @@ class ClientController extends Controller
 
     public function destroy(Client $client): RedirectResponse
     {
+        $eventsCount = $client->events()->count();
+
+        if ($eventsCount > 0) {
+            return redirect()->route('clients.index')
+                ->with('error', "Cannot delete {$client->company_name}: used by {$eventsCount} event(s).");
+        }
+
         $client->delete();
 
         return redirect()->route('clients.index')->with('error', 'Client deleted.');

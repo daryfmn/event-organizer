@@ -79,6 +79,13 @@ class EventController extends Controller
 
     public function destroy(Event $event): RedirectResponse
     {
+        $quotationsCount = $event->quotations()->count();
+
+        if ($quotationsCount > 0) {
+            return redirect()->route('events.index')
+                ->with('error', "Cannot delete {$event->title}: used by {$quotationsCount} quotation(s).");
+        }
+
         $event->delete();
 
         return redirect()->route('events.index')->with('error', 'Event deleted.');

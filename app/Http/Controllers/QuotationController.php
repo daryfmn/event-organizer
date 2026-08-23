@@ -45,8 +45,7 @@ class QuotationController extends Controller
             'events' => Event::orderBy('title')->get(),
             'totalQuotations' => Quotation::count(),
             'awaitingApproval' => Quotation::whereHas('event', fn ($event) => $event->where('status', 'sent'))->where('is_approved', false)->count(),
-            'approvedValue' => (float) Quotation::where('is_approved', true)->sum('grand_total'),
-            'pipelineValue' => (float) Quotation::sum('grand_total'),
+            'approvedCount' => Quotation::where('is_approved', true)->count(),
         ]);
     }
 
@@ -67,8 +66,9 @@ class QuotationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
+        $setting = CompanySetting::current();
 
-        $quotation = DB::transaction(function () use ($request, $data) {
+        $quotation = DB::transaction(function () use ($request, $data, $setting) {
             $quotation = Quotation::create([
                 'event_id' => $data['event_id'],
                 'signed_by' => $request->user()->id,
@@ -76,8 +76,8 @@ class QuotationController extends Controller
                 'variant_label' => $data['variant_label'],
                 'variant_start_date' => $data['variant_start_date'],
                 'variant_end_date' => $data['variant_end_date'],
-                'organizing_fee_percent' => $data['organizing_fee_percent'],
-                'ppn_percent' => $data['ppn_percent'],
+                'organizing_fee_percent' => $setting->organizing_fee_percent ?? 10,
+                'ppn_percent' => $setting->ppn_percent ?? 11,
                 'notes' => $data['notes'] ?? null,
             ]);
 
@@ -88,6 +88,20 @@ class QuotationController extends Controller
         });
 
         return redirect()->route('quotations.index')->with('status', "Quotation {$quotation->quotation_number} created.");
+    }
+
+    public function show(Quotation $quotation): View
+    {
+        $quotation->load(['items.vendor', 'event.client', 'event.eventType', 'signedBy']);
+
+        $groupedItems = $quotation->items
+            ->groupBy('section')
+            ->sortBy(fn ($items, $section) => array_search($section, QuotationItem::SECTIONS));
+
+        return view('quotations.show', [
+            'quotation' => $quotation,
+            'groupedItems' => $groupedItems,
+        ]);
     }
 
     public function edit(Quotation $quotation): View
@@ -169,8 +183,6 @@ class QuotationController extends Controller
             'variant_label' => ['required', 'string', 'max:100'],
             'variant_start_date' => ['required', 'date'],
             'variant_end_date' => ['required', 'date', 'after_or_equal:variant_start_date'],
-            'organizing_fee_percent' => ['required', 'numeric', 'min:0', 'max:100'],
-            'ppn_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.section' => ['required', Rule::in(QuotationItem::SECTIONS)],

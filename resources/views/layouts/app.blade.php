@@ -47,39 +47,35 @@
         @endforeach
 
         <div class="sidebar-divider"></div>
-
-        <a class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="#">
-            {!! $icons['settings'] !!}
-            Settings
-        </a>
     </nav>
 
     <div class="sidebar-bottom">
-        <div class="nav-item">
-            <div class="avatar-sm" style="width:28px;height:28px;background:#38BDF8;color:#0F172A;">{{ $initials }}</div>
-            <div>
-                <div class="user-name">{{ $user->name }}</div>
-                <div class="user-role">{{ $user->job_title ?? ucfirst($user->role) }}</div>
-            </div>
-        </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="logout-btn">Log out</button>
-        </form>
+        <a class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.edit') }}">
+            {!! $icons['settings'] !!}
+            Settings
+        </a>
     </div>
 </aside>
 
 <div class="main">
-    <header class="topbar">
-        <div class="topbar-search">
-            <svg width="14" height="14" fill="none" stroke="#94A3B8" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Search events, quotations, clients..." />
-        </div>
+    <header class="topbar" style="justify-content:flex-end;">
         <div class="topbar-right">
-            <div class="topbar-icon">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="user-menu">
+                <button type="button" class="avatar" id="user-menu-btn">{{ $initials }}</button>
+                <div class="user-dropdown" id="user-dropdown">
+                    <a href="{{ route('profile.edit') }}">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Profile settings
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Log out
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="avatar">{{ $initials }}</div>
         </div>
     </header>
 

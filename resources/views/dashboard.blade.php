@@ -3,10 +3,10 @@
 @section('content')
     <div class="page-header">
         <div>
-            <div class="page-title">Dashboard</div>
-            <div class="page-date">{{ now()->format('l, d F Y') }}</div>
+            <div class="page-title">Welcome back, {{ auth()->user()->name }}</div>
+            <div class="page-date">{{ auth()->user()->job_title ?? ucfirst(auth()->user()->role) }} — {{ now()->format('l, d F Y') }}</div>
         </div>
-        <a href="#" class="btn-sm" style="padding:9px 16px;font-size:13px;">+ New Event</a>
+        <a href="{{ route('events.create') }}" class="btn-sm" style="padding:9px 16px;font-size:13px;">+ New Event</a>
     </div>
 
     <div class="stats-grid">
