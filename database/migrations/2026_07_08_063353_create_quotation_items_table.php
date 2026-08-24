@@ -20,7 +20,7 @@ return new class extends Migration
                 'secretariat',
                 'team_management',
                 'venue',
-                'production'
+                'production',
             ]);
             $table->string('sub_section', 100)->nullable();
             $table->string('description', 200);
